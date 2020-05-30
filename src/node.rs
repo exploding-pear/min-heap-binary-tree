@@ -32,6 +32,36 @@ impl Node {
         })
     }
 
+    /// creates a new node from child_value with the parent being
+    /// the passed in value.
+    /// 
+    /// Parent and Child relationship setup automatically
+    /// # Example
+    /// ```
+    /// let parent = min_heap::node::Node::new_orphan(5);
+    /// let val = vec![24];
+    /// min_heap::node::Node::new_child(&parent, 24);
+    /// assert_eq!(parent.get_child_values(), val)
+    /// ```
+    pub fn new_child(parent: &Rc<Node>, child_value: i32) {
+        // creating a new node with the parent being the passed in node
+        let child = Rc::new(Node{
+            value : child_value,
+            parent: RefCell::new(Rc::downgrade(&parent)),
+            children: RefCell::new(vec![]),
+        });
+
+        // pushing a strong reference the of the new node
+        // into the child vector of the parent node
+        parent.children.borrow_mut().push(Rc::clone(&child));
+    }
+
+    /// swaps a parent with a child.
+    /// this is done by simply swapping the values
+    pub fn swap(parent: &Rc<Node>, child: &Rc<Node>) {
+        unimplemented!();
+    }
+
     /// returns the value field of the Node struct
     /// # Example
     /// ```
@@ -119,5 +149,13 @@ mod tests {
 
         let arr : Vec<i32> = vec![2, 3];
         assert_eq!(arr, node1.get_child_values())
+    }
+
+    #[test]
+    fn one_new_child() {
+        let parent = Node::new_orphan(5);
+        let val = vec![24];
+        Node::new_child(&parent, 24);
+        assert_eq!(parent.get_child_values(), val)
     }
 }
